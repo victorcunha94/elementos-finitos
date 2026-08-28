@@ -1,0 +1,110 @@
+\documentclass[a4paper,12pt]{article}
+\setlength{\headheight}{14.49998pt}
+\addtolength{\topmargin}{-2.49998pt}
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{graphicx,url}
+\usepackage{subfigure}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{fvextra}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}  % For title formatting
+\geometry{margin=1in}
+\setstretch{1.5}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{subcaption}
+
+%%% CARREGAMENTO DE COMANDOS
+\input{comandos.tex}  
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Assignment}
+\fancyhead[R]{\thepage}
+
+% Title Formatting
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+
+% Cover Page
+\title{
+    \vspace{2cm} % Adjust vertical space
+    \includegraphics[width=0.55\textwidth]{Figuras/logo_icmc.png} \\ % Add your logo here (change "logo.png" to the actual filename)
+    \vspace{1cm} % Adjust vertical space after the logo
+    \textbf{\Huge Título da atividade} \\
+    \vspace{1cm} % Adjust vertical space
+    \large Nome e código da disciplina  \\
+    \vspace{0.5cm} % Adjust vertical space
+    
+}
+\author{Nome do primeiro aluno (cpf 1)\\ Nome do segundo aluno (cpf 2) }
+
+\date{\today}
+
+\begin{document}
+
+% Title Page
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+% Table of Contents
+% Start page numbering from the Table of Contents
+\tableofcontents
+\newpage
+
+\section{Introdução}
+\input{chaps/intro.tex}
+
+
+\section{Section 01}
+\input{chaps/section01.tex}
+
+\section{Section 02}
+\input{chaps/section02.tex}
+
+\section{Section 03}
+\input{chaps/section03.tex}
+
+\section{Section 04}
+\input{chaps/section04.tex}
+
+\section{Section 05}
+\input{chaps/section05.tex}
+
+\section{Section 06}
+\input{chaps/section06.tex}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{references.bib}  % Add a .bib file if you have references
+\nocite{FABRICIO_ROBERTO_2025_MEC_FLU}
+
+\end{document}
+
+
+%\begin{figure} [H]
+%    \centering
+%    \includegraphics[width=0.65\linewidth]{name.png}
+%    \caption{caption}
+%    \label{fig:}
+%\end{figure}
