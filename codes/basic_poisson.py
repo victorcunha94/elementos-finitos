@@ -7,10 +7,10 @@ import gmsh
 import matplotlib.pyplot as plt
 
 # Finite element mesh
-Nx, Ny = 16, 16
+Nx, Ny = 1024, 1024
 Lx, Ly = 1.0, 1.0
-#msh = fd.RectangleMesh(Nx, Ny, Lx, Ly, quadrilateral=True)
-msh = fd.Mesh('mesh.msh')
+msh = fd.RectangleMesh(Nx, Ny, Lx, Ly, quadrilateral=True)
+#msh = fd.Mesh('mesh.msh')
 
 # Space of functions
 Vd = fd.FunctionSpace(msh, "CG", degree=1)
