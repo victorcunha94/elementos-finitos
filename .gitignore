@@ -5,3 +5,6 @@
 *.vtu
 
 *.pdf
+
+*.log
+*.aux

@@ -1,0 +1,173 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\setlist[enumerate]{itemsep=0.25em}
+\setlength{\parskip}{0.4em}
+
+\title{Propostas de trabalho de conclusão\\da disciplina de Elementos Finitos}
+\author{Victor Matheus da Cunha Santos}
+\date{}
+
+\begin{document}
+\maketitle
+
+Apresentam-se duas propostas alternativas relacionadas à pesquisa de doutorado em escoamentos em meios porosos. Ambas preveem implementação no Firedrake e um estudo numérico orientado pela formulação variacional, pelas propriedades da discretização e pela avaliação dos erros.
+
+\section{Proposta 1: estudo numérico da equação de Buckley--Leverett em uma dimensão pelo método de Galerkin descontínuo}
+
+\subsection{Contextualização e objetivo}
+
+A equação de Buckley--Leverett descreve, sob hipóteses simplificadoras, o transporte da saturação em escoamentos bifásicos em meios porosos. Seu fluxo não linear pode produzir soluções compostas por ondas de rarefação e choques, tornando o problema adequado ao estudo de métodos conservativos e da influência de descontinuidades sobre os erros numéricos.
+
+O objetivo é implementar no Firedrake uma aproximação por Galerkin descontínuo de grau zero (DG0) e investigar como o refinamento espacial e a escolha do passo temporal influenciam a precisão, a conservação e a representação da frente de choque. O trabalho aproveitará a formulação e a solução semianalítica de referência já desenvolvidas na tese, com implementação anterior em FEniCSx.
+
+\subsection{Modelo e discretização}
+
+Será considerada a lei de conservação escalar adimensional
+\begin{equation}
+    \frac{\partial s}{\partial t}
+    +\frac{\partial f(s)}{\partial x}=0,
+    \qquad
+    f(s)=\frac{M s^2}{M s^2+(1-s)^2},
+    \qquad M>0,
+\end{equation}
+em um intervalo unidimensional, com dados iniciais constantes por partes. Os dados de fronteira e o tempo final serão escolhidos de modo a permitir a comparação com a solução de Riemann antes de sua interação com as extremidades do domínio.
+
+A discretização espacial utilizará funções constantes por elemento e um fluxo numérico de Rusanov. Para a discretização temporal, será empregado o método SSPRK2, com passo de tempo sujeito à restrição CFL correspondente.
+
+\subsection{Metodologia e análise numérica}
+
+O desenvolvimento compreenderá:
+\begin{enumerate}
+    \item Apresentar o modelo, a estrutura da solução de referência e a condição de Rankine--Hugoniot.
+    \item Derivar a formulação DG0, identificando os fluxos nas interfaces e o balanço por elemento.
+    \item Implementar o método no Firedrake e verificar a reprodução do perfil de referência.
+    \item Realizar refinamentos sucessivos de malha e calcular erros e taxas observadas de convergência.
+    \item Avaliar a influência do passo temporal, a representação do choque e o balanço global de massa, incluindo os fluxos de fronteira.
+\end{enumerate}
+
+Serão consideradas as normas $L^1$ e $L^2$. Para distinguir o erro da função aproximada do erro nas médias de célula, serão avaliadas as medidas
+\begin{equation}
+    E_q(t)=\|s_h(\cdot,t)-s(\cdot,t)\|_{L^q(\Omega)},
+    \qquad q\in\{1,2\},
+\end{equation}
+e
+\begin{equation}
+    E_{q,\mathrm{med}}(t)
+    =
+    \left(
+    \sum_{K\in\mathcal{T}_h}|K|
+    |S_K(t)-\overline{s}_K(t)|^q
+    \right)^{1/q},
+    \qquad
+    \overline{s}_K(t)=\frac{1}{|K|}\int_K s(x,t)\,dx,
+\end{equation}
+em que $S_K$ é o valor constante da solução DG0 no elemento $K$. As integrações da referência deverão considerar a posição da descontinuidade e precisão suficiente para não dominar os erros medidos.
+
+Para malhas sucessivas de tamanhos $h$ e $h/2$, a taxa observada será calculada por
+\begin{equation}
+    r=\frac{\log(E(h)/E(h/2))}{\log 2}.
+\end{equation}
+O refinamento com número de Courant fixo caracterizará o método completamente discreto. Reduções adicionais do passo temporal em malhas fixas serão utilizadas para avaliar a contribuição do erro temporal.
+
+\subsection{Escopo e resultados esperados}
+
+Espera-se obter tabelas de erros e taxas, comparações dos perfis de saturação e medidas do balanço de massa. A interpretação dos resultados considerará a presença do choque, sem pressupor as taxas próprias de soluções suaves.
+
+O escopo principal compreende DG0 e um único fluxo numérico. Como extensão opcional, poderá ser considerada a comparação com outro fluxo ou uma aproximação com reconstrução ou grau superior e limitador. A introdução de limitadores dependerá do tempo disponível e não constitui requisito para a conclusão do trabalho.
+
+\clearpage
+\section{Proposta 2: convergência e conservação local em uma formulação de elementos finitos mistos para Darcy}
+
+\subsection{Contextualização e objetivo}
+
+A determinação da pressão e da velocidade em meios porosos constitui uma etapa fundamental dos modelos estudados na tese. A formulação mista permite aproximar simultaneamente essas variáveis e investigar a relação entre a escolha dos espaços discretos, a estabilidade e a conservação local.
+
+O objetivo é estudar e implementar no Firedrake uma formulação mista para o problema de Darcy, avaliando a convergência das aproximações de pressão e velocidade e a satisfação do balanço de massa por elemento. A proposta se relaciona diretamente à formulação abstrata de problemas mistos e às condições de boa colocação apresentadas na disciplina.
+
+\subsection{Modelo e discretização}
+
+Será considerado um problema estacionário e linear em um domínio bidimensional $\Omega$:
+\begin{equation}
+    \begin{aligned}
+        \mathbf{A}^{-1}\mathbf{u}+\nabla p &= \mathbf{0}
+        &&\text{em }\Omega,\\
+        \nabla\cdot\mathbf{u} &= g
+        &&\text{em }\Omega,\\
+        p &= p_D
+        &&\text{em }\partial\Omega,
+    \end{aligned}
+\end{equation}
+em que $\mathbf{A}=\mathbf{K}/\mu$ é uma mobilidade prescrita, simétrica e uniformemente positiva definida. No caso inicial de verificação, será adotada uma mobilidade constante.
+
+A formulação mista consiste em encontrar
+$(\mathbf{u},p)\in H(\operatorname{div};\Omega)\times L^2(\Omega)$
+tal que
+\begin{equation}
+    \begin{aligned}
+        (\mathbf{A}^{-1}\mathbf{u},\mathbf{v})_\Omega
+        -(p,\nabla\cdot\mathbf{v})_\Omega
+        &=-\langle p_D,\mathbf{v}\cdot\mathbf{n}\rangle_{\partial\Omega},\\
+        (\nabla\cdot\mathbf{u},q)_\Omega
+        &=(g,q)_\Omega,
+    \end{aligned}
+\end{equation}
+para todo
+$(\mathbf{v},q)\in H(\operatorname{div};\Omega)\times L^2(\Omega)$.
+O termo de fronteira é entendido como o pareamento apropriado entre os traços.
+
+Serão utilizadas malhas triangulares e um par discreto estável, inicialmente Raviart--Thomas de menor ordem para a velocidade e constantes descontínuas para a pressão. A fundamentação abordará a condição inf--sup e a coercividade no núcleo, destacando a importância de constantes de estabilidade independentes do refinamento.
+
+\subsection{Metodologia e análise numérica}
+
+O desenvolvimento compreenderá:
+\begin{enumerate}
+    \item Derivar a formulação variacional mista e identificar os espaços funcionais e o tratamento dos dados de fronteira.
+    \item Apresentar o par discreto escolhido e sua relação com as condições de estabilidade.
+    \item Construir um caso com solução manufaturada suave, derivando a velocidade, a fonte e os dados de fronteira a partir de uma pressão prescrita.
+    \item Implementar o problema no Firedrake e realizar refinamentos sucessivos de malha.
+    \item Calcular os erros, as taxas observadas e os resíduos de conservação local.
+\end{enumerate}
+
+Serão avaliados
+\begin{equation}
+    E_p=\|p-p_h\|_{L^2(\Omega)},
+    \qquad
+    E_u=\|\mathbf{u}-\mathbf{u}_h\|_{L^2(\Omega)},
+\end{equation}
+e
+\begin{equation}
+    E_{\operatorname{div}}
+    =
+    \|\nabla\cdot(\mathbf{u}-\mathbf{u}_h)\|_{L^2(\Omega)}.
+\end{equation}
+As taxas observadas serão confrontadas com as estimativas de aproximação pertinentes ao par escolhido e à regularidade da solução.
+
+A conservação local será avaliada pelo resíduo
+\begin{equation}
+    R_K
+    =
+    \int_{\partial K}\mathbf{u}_h\cdot\mathbf{n}_K\,ds
+    -
+    \int_K g\,dx,
+    \qquad K\in\mathcal{T}_h.
+\end{equation}
+A presença de constantes por elemento no espaço de pressão permite obter esse balanço a partir da equação discreta. Os resíduos computados serão interpretados considerando a precisão da quadratura e a tolerância do sistema linear.
+
+\subsection{Escopo e resultados esperados}
+
+Espera-se relacionar os resultados computacionais à teoria de problemas mistos, apresentando tabelas de convergência, campos de pressão e velocidade e medidas de conservação por elemento.
+
+O escopo principal será restrito ao problema linear, com mobilidade prescrita e um único par misto estável. Como extensão opcional, poderá ser realizada uma comparação com a formulação primal CG1, recuperando a velocidade por $-\mathbf{A}\nabla p_h$ e avaliando seus erros e balanços locais. Um caso com permeabilidade descontínua poderá ser considerado posteriormente, distinguindo seus efeitos sobre a regularidade da solução.
+
+O acoplamento com a temperatura e a resolução do sistema não linear completo permanecerão como motivação da pesquisa, sem integrar as etapas necessárias à conclusão deste trabalho.
+
+\end{document}
+
