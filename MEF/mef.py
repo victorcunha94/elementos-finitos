@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 a = 0
 b = 1
-Ne = 4
+Ne = 9
 def mesh(a, b, N_element):
     dim = 2
     omega = np.linspace(a, b, Ne + 1, endpoint = True)
@@ -18,7 +18,5 @@ def mesh(a, b, N_element):
         elements[e, 1] = nodes[e + 1]
 
     return np.array(nodes).reshape(-1,1), np.array(elements)
-
-
 
 
