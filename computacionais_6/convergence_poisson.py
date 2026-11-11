@@ -67,6 +67,10 @@ for N in N_vetor:
         .
         .
         .
+        EL2  = fd.assemble(((uh - ue)**2) * fd.dx)
+        EH1  = fd.assemble((((uh - ue)**2) + fd.dot(fd.grad(uh - ue),fd.grad(uh - ue))) * fd.dx)
+        EInt = fd.assemble(uh* fd.dx)
+
         eh = uh - uex(x)
         
         .
